@@ -19,25 +19,27 @@ namespace Nop.Web.Models.Catalog
         /// <summary>
         /// Gets or sets available sort options
         /// </summary>
-        public IList<SelectListItem> AvailableSortOptions { get; set; }
+        public IList<SortOptionModel> AvailableSortOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to change view mode
         /// </summary>
         public bool AllowProductViewModeChanging { get; set; }
+
         /// <summary>
         /// Gets or sets available view mode options
         /// </summary>
-        public IList<SelectListItem> AvailableViewModes { get; set; }
+        public IList<ViewModeModel> AvailableViewModes { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to select page size
         /// </summary>
         public bool AllowCustomersToSelectPageSize { get; set; }
+
         /// <summary>
         /// Gets or sets available page size options
         /// </summary>
-        public IList<SelectListItem> PageSizeOptions { get; set; }
+        public IList<PageSizeModel> PageSizeOptions { get; set; }
 
         /// <summary>
         /// Gets or sets a order by
@@ -55,9 +57,9 @@ namespace Nop.Web.Models.Catalog
 
         public CatalogProductsDisplayingModel()
         {
-            AvailableSortOptions = new List<SelectListItem>();
-            AvailableViewModes = new List<SelectListItem>();
-            PageSizeOptions = new List<SelectListItem>();
+            AvailableSortOptions = new List<SortOptionModel>();
+            AvailableViewModes = new List<ViewModeModel>();
+            PageSizeOptions = new List<PageSizeModel>();
         }
 
         #endregion

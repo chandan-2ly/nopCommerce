@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Configuration;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Seo;
@@ -50,6 +51,14 @@ namespace Nop.Web.Framework.Migrations.UpgradeTo440
             {
                 seoSettings.ReservedUrlRecordSlugs.Add(newUrlRecord);
                 settingService.SaveSettingAsync(seoSettings).Wait();
+            }
+
+            //#276 AJAX filters
+            var catalogSettings = settingService.LoadSettingAsync<CatalogSettings>().Result;
+            if (!settingService.SettingExistsAsync(catalogSettings, settings => settings.UseAjaxCatalogProductsLoading).Result)
+            {
+                catalogSettings.UseAjaxCatalogProductsLoading = true;
+                settingService.SaveSettingAsync(catalogSettings).Wait();
             }
         }
 

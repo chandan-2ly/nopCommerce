@@ -400,8 +400,14 @@ namespace Nop.Services.Catalog
             // todo: add caching ?
             var productsQuery = await GetAvailableProductsQueryAsync();
 
-            var store = await _storeContext.GetCurrentStoreAsync();
-            var subCategoryIds = await _categoryService.GetChildCategoryIdsAsync(categoryId, store.Id);
+            IList<int> subCategoryIds = null;
+
+            if (_catalogSettings.ShowProductsFromSubcategories)
+            {
+                var store = await _storeContext.GetCurrentStoreAsync();
+                subCategoryIds = await _categoryService.GetChildCategoryIdsAsync(categoryId, store.Id);
+            }
+            
             var productCategoryQuery = from pc in _productCategoryRepository.Table
                                        where (pc.CategoryId == categoryId || (_catalogSettings.ShowProductsFromSubcategories && subCategoryIds.Contains(pc.CategoryId))) &&
                                              (_catalogSettings.IncludeFeaturedProductsInNormalLists || !pc.IsFeaturedProduct)

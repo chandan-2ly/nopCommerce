@@ -31,19 +31,9 @@ namespace Nop.Web.Models.Catalog
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// Gets or sets the already filtered items
+        /// Gets or sets the filter items
         /// </summary>
-        public IList<SpecificationFilterItem> AlreadyFilteredItems { get; set; }
-
-        /// <summary>
-        /// Gets or sets the not yet filtered items
-        /// </summary>
-        public IList<SpecificationFilterItem> NotFilteredItems { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL of "remove filters" button
-        /// </summary>
-        public string RemoveFilterUrl { get; set; }
+        public IList<SpecificationFilterItem> FilterItems { get; set; }
 
         #endregion
 
@@ -54,8 +44,7 @@ namespace Nop.Web.Models.Catalog
         /// </summary>
         public SpecificationFilterModel()
         {
-            AlreadyFilteredItems = new List<SpecificationFilterItem>();
-            NotFilteredItems = new List<SpecificationFilterItem>();
+            FilterItems = new List<SpecificationFilterItem>();
         }
 
         #endregion
@@ -152,21 +141,9 @@ namespace Nop.Web.Models.Catalog
 
             //prepare the model properties
             Enabled = true;
-            var removeFilterUrl = webHelper.RemoveQueryString(webHelper.GetThisPageUrl(true), QUERYSTRINGPARAM);
-            RemoveFilterUrl = await ExcludeQueryStringParamsAsync(removeFilterUrl, webHelper);
-
-            //get already filtered specification options
-            var alreadyFilteredOptions = allFilters.Where(x => alreadyFilteredSpecOptionIds.Contains(x.SpecificationAttributeOptionId));
-            AlreadyFilteredItems = alreadyFilteredOptions.Select(x =>
-                new SpecificationFilterItem
-                {
-                    SpecificationAttributeName = x.SpecificationAttributeName,
-                    SpecificationAttributeOptionName = x.SpecificationAttributeOptionName,
-                    SpecificationAttributeOptionColorRgb = x.SpecificationAttributeOptionColorRgb
-                }).ToList();
 
             //get not filtered specification options
-            NotFilteredItems = await allFilters.Except(alreadyFilteredOptions).SelectAwait(async x =>
+            FilterItems = await allFilters.SelectAwait(async x =>
             {
                 //filter URL
                 var alreadyFiltered = alreadyFilteredSpecOptionIds.Concat(new List<int> { x.SpecificationAttributeOptionId });
@@ -176,6 +153,7 @@ namespace Nop.Web.Models.Catalog
                 return new SpecificationFilterItem
                 {
                     SpecificationAttributeName = x.SpecificationAttributeName,
+                    SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
                     SpecificationAttributeOptionName = x.SpecificationAttributeOptionName,
                     SpecificationAttributeOptionColorRgb = x.SpecificationAttributeOptionColorRgb,
                     FilterUrl = await ExcludeQueryStringParamsAsync(filterUrl, webHelper)

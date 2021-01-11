@@ -1,10 +1,41 @@
 ﻿@model CatalogProductsModel
 
-@*todo: add script for filtering/paging/sorting here*@
+@inject Nop.Core.Domain.Catalog.CatalogSettings catalogSettings
 
 @if (Model.Products.Count > 0)
 {
     <div class="products-container">
+        <div class="ajax-products-busy"></div>
         @await Html.PartialAsync("_ProductsInGridOrLines", Model)
     </div>
+}
+
+@if (catalogSettings.UseAjaxCatalogProductsLoading)
+{
+    var currentCategoryId = 0;
+    if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("catalog", StringComparison.InvariantCultureIgnoreCase) &&
+        Url.ActionContext.RouteData.Values["action"].ToString().Equals("category", StringComparison.InvariantCultureIgnoreCase))
+    {
+        currentCategoryId = Convert.ToInt32(Url.ActionContext.RouteData.Values["categoryId"].ToString());
+    }
+
+    var currentManufacturerId = 0;
+    if (Url.ActionContext.RouteData.Values["controller"].ToString().Equals("catalog", StringComparison.InvariantCultureIgnoreCase) &&
+        Url.ActionContext.RouteData.Values["action"].ToString().Equals("manufacturer", StringComparison.InvariantCultureIgnoreCase))
+    {
+        currentManufacturerId = Convert.ToInt32(Url.ActionContext.RouteData.Values["manufacturerId"].ToString());
+    }
+
+    Html.AddScriptParts(ResourceLocation.Footer, "~/js/public.ajaxcatalogproducts.js");
+
+    <script asp-location="Footer">
+        $(document).ready(function () {
+            AjaxCatalogProducts.init({
+                browserPath: '@Context.Request.Path',
+                fetchUrl: '@Html.Raw(Url.Action("GetProducts", "Catalog"))',
+                categoryId: @currentCategoryId,
+                manufacturerId: @currentManufacturerId
+            });
+        });
+    </script>
 }

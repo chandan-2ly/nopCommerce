@@ -3051,7 +3051,8 @@ namespace Nop.Services.Installation
                 ExportImportSplitProductsFile = false,
                 ExportImportRelatedEntitiesByName = true,
                 CountDisplayedYearsDatePicker = 1,
-                UseAjaxLoadMenu = false
+                UseAjaxLoadMenu = false,
+                UseAjaxCatalogProductsLoading = true,
             });
 
             await settingService.SaveSettingAsync(new LocalizationSettings

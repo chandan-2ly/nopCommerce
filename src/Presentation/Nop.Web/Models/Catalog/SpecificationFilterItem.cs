@@ -20,6 +20,11 @@ namespace Nop.Web.Models.Catalog
         public string SpecificationAttributeOptionName { get; set; }
 
         /// <summary>
+        /// Gets or sets the specification attribute option id
+        /// </summary>
+        public int SpecificationAttributeOptionId { get; set; }
+
+        /// <summary>
         /// Gets or sets the specification attribute option color (RGB)
         /// </summary>
         public string SpecificationAttributeOptionColorRgb { get; set; }

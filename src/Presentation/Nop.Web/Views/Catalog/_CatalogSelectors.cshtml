@@ -1,5 +1,7 @@
 ﻿@model CatalogProductsDisplayingModel
 
+@*todo: inject 'enable ajax setting'*@
+
 <div class="product-selectors">
     @*view mode*@
     @if (Model.AllowProductViewModeChanging)
@@ -11,8 +13,8 @@
                 var gridMode = Model.AvailableViewModes[0];
                 var listMode = Model.AvailableViewModes[1];
 
-                <a class="viewmode-icon grid @if(gridMode.Selected){<text>selected</text>}" href="@gridMode.Value" title="@gridMode.Text">@gridMode.Text</a>
-                <a class="viewmode-icon list @if (listMode.Selected){<text>selected</text>}" href="@listMode.Value" title="@listMode.Text">@listMode.Text</a>
+                <a class="viewmode-icon grid @if (gridMode.Selected){<text>selected</text>}" data-viewmode="@gridMode.Value" href="@gridMode.URL" title="@gridMode.Name">@gridMode.Name</a>
+                <a class="viewmode-icon list @if (listMode.Selected){<text>selected</text>}" data-viewmode="@listMode.Value" href="@listMode.URL" title="@listMode.Name">@listMode.Name</a>
             }
         </div>
     }
@@ -21,7 +23,12 @@
     {
         <div class="product-sorting">
             <span>@T("Catalog.OrderBy")</span>
-            @Html.DropDownList("products-orderby", Model.AvailableSortOptions, new { onchange = "setLocation(this.value);", aria_label = T("Catalog.OrderBy.Label") })
+            <select id="products-orderby" aria-label="@T("Catalog.OrderBy.Label")" onchange="setLocation(this.value);">
+                @foreach (var option in Model.AvailableSortOptions)
+                {
+                    <option data-order="@option.Value" value="@option.URL">@option.Name</option>
+                }
+            </select>
         </div>
     }
     @*page size*@
@@ -29,7 +36,12 @@
     {
         <div class="product-page-size">
             <span>@T("Catalog.PageSize")</span>
-            @Html.DropDownList("products-pagesize", Model.PageSizeOptions, new { onchange = "setLocation(this.value);", aria_label = T("Catalog.PageSize.Label") })
+            <select id="products-pagesize" aria-label="@T("Catalog.PageSize.Label")" onchange="setLocation(this.value);">
+                @foreach (var option in Model.PageSizeOptions)
+                {
+                    <option data-pagesize="@option.Value" value="@option.URL">@option.Name</option>
+                }
+            </select>
             <span>@T("Catalog.PageSize.PerPage")</span>
         </div>
     }

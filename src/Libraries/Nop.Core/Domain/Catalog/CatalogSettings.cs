@@ -474,5 +474,10 @@ namespace Nop.Core.Domain.Catalog
         /// Get or set a value indicating whether use standart menu in public store or use Ajax to load menu
         /// </summary>
         public bool UseAjaxLoadMenu { get; set; }
+
+        /// <summary>
+        /// Get or set a value indicating whether use standart or AJAX products loading (applicable to 'paging', 'filtering', 'view modes') in catalog
+        /// </summary>
+        public bool UseAjaxCatalogProductsLoading { get; set; }
     }
 }

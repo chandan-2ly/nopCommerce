@@ -89,9 +89,28 @@ namespace Nop.Web.Controllers
         }
 
         #endregion
-        
+
+        #region Common
+
+        public virtual async Task<IActionResult> GetProducts(int categoryId, int manufacturerId)
+        {
+            if (categoryId > 0)
+            {
+
+            }
+            else
+            if (manufacturerId > 0)
+            {
+                return PartialView("", "");
+            }
+
+            return NoContent();
+        }
+
+        #endregion
+
         #region Categories
-        
+
         public virtual async Task<IActionResult> Category(int categoryId, CatalogProductsModel command)
         {
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);

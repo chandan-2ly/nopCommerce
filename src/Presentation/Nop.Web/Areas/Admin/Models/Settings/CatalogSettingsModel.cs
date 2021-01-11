@@ -322,6 +322,10 @@ namespace Nop.Web.Areas.Admin.Models.Settings
 
         public ReviewTypeSearchModel ReviewTypeSearchModel { get; set; }
 
+        [NopResourceDisplayName("Admin.Configuration.Settings.Catalog.UseAjaxCatalogProductsLoading")]
+        public bool UseAjaxCatalogProductsLoading { get; set; }
+        public bool UseAjaxCatalogProductsLoading_OverrideForStore { get; set; }
+
         #endregion
     }
 }

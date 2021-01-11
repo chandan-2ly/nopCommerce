@@ -5961,6 +5961,12 @@
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.SortOptions.Name">
     <Value>Name</Value>
   </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.UseAjaxCatalogProductsLoading">
+    <Value>Use AJAX products loading</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.Catalog.UseAjaxCatalogProductsLoading.Hint">
+    <Value>Check to load products asynchronously (applicable to 'paging', 'filtering', 'view modes') on catalog pages.</Value>
+  </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.CustomerSettings.PhoneNumberRegexValidationRule.Error">
     <Value>The regular expression for phone number validation is incorrect</Value>
   </LocaleResource>

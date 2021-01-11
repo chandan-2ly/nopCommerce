@@ -144,6 +144,19 @@ namespace Nop.Web.Factories
 
         #endregion
 
+        #region Utilities
+
+        private async Task<CatalogProductsModel> PrepareCatalogProductsModel()
+        {
+            var model = new CatalogProductsModel();
+
+
+
+            return model;
+        }
+
+        #endregion
+
         #region Common
 
         /// <summary>
@@ -185,10 +198,11 @@ namespace Nop.Web.Factories
             var currentPageUrl = _webHelper.GetThisPageUrl(true);
             foreach (var option in orderedActiveSortingOptions)
             {
-                displayingModel.AvailableSortOptions.Add(new SelectListItem
+                displayingModel.AvailableSortOptions.Add(new SortOptionModel
                 {
-                    Text = await _localizationService.GetLocalizedEnumAsync((ProductSortingEnum)option.Id),
-                    Value = _webHelper.ModifyQueryString(currentPageUrl, "orderby", option.Id.ToString()),
+                    Name = await _localizationService.GetLocalizedEnumAsync((ProductSortingEnum)option.Id),
+                    URL = _webHelper.ModifyQueryString(currentPageUrl, "orderby", option.Id.ToString()),
+                    Value = option.Id.ToString(),
                     Selected = option.Id == command.OrderBy
                 });
             }
@@ -217,17 +231,19 @@ namespace Nop.Web.Factories
             {
                 var currentPageUrl = _webHelper.GetThisPageUrl(true);
                 //grid
-                displayingModel.AvailableViewModes.Add(new SelectListItem
+                displayingModel.AvailableViewModes.Add(new ViewModeModel
                 {
-                    Text = await _localizationService.GetResourceAsync("Catalog.ViewMode.Grid"),
-                    Value = _webHelper.ModifyQueryString(currentPageUrl, "viewmode", "grid"),
+                    Name = await _localizationService.GetResourceAsync("Catalog.ViewMode.Grid"),
+                    Value = "grid",
+                    URL = _webHelper.ModifyQueryString(currentPageUrl, "viewmode", "grid"),
                     Selected = viewMode == "grid"
                 });
                 //list
-                displayingModel.AvailableViewModes.Add(new SelectListItem
+                displayingModel.AvailableViewModes.Add(new ViewModeModel
                 {
-                    Text = await _localizationService.GetResourceAsync("Catalog.ViewMode.List"),
-                    Value = _webHelper.ModifyQueryString(currentPageUrl, "viewmode", "list"),
+                    Name = await _localizationService.GetResourceAsync("Catalog.ViewMode.List"),
+                    Value = "list",
+                    URL = _webHelper.ModifyQueryString(currentPageUrl, "viewmode", "list"),
                     Selected = viewMode == "list"
                 });
             }
@@ -283,22 +299,23 @@ namespace Nop.Web.Factories
                         if (temp <= 0)
                             continue;
 
-                        productsModel.DisplayingModel.PageSizeOptions.Add(new SelectListItem
+                        productsModel.DisplayingModel.PageSizeOptions.Add(new PageSizeModel
                         {
-                            Text = pageSize,
-                            Value = _webHelper.ModifyQueryString(sortUrl, "pagesize", pageSize),
+                            Name = pageSize,
+                            URL = _webHelper.ModifyQueryString(sortUrl, "pagesize", pageSize),
+                            Value = pageSize,
                             Selected = pageSize.Equals(command.PageSize.ToString(), StringComparison.InvariantCultureIgnoreCase)
                         });
                     }
 
                     if (productsModel.DisplayingModel.PageSizeOptions.Any())
                     {
-                        productsModel.DisplayingModel.PageSizeOptions = productsModel.DisplayingModel.PageSizeOptions.OrderBy(x => int.Parse(x.Text)).ToList();
+                        productsModel.DisplayingModel.PageSizeOptions = productsModel.DisplayingModel.PageSizeOptions.OrderBy(x => int.Parse(x.Value)).ToList();
                         productsModel.DisplayingModel.AllowCustomersToSelectPageSize = true;
 
                         if (command.PageSize <= 0)
                         {
-                            command.PageSize = int.Parse(productsModel.DisplayingModel.PageSizeOptions.First().Text);
+                            command.PageSize = int.Parse(productsModel.DisplayingModel.PageSizeOptions.First().Value);
                         }
                     }
                 }
@@ -457,6 +474,7 @@ namespace Nop.Web.Factories
 
             model.CatalogProductsModel.LoadPagedList(products);
 
+            // todo: remove it
             //specs
             await model.CatalogProductsModel.FilteringModel.SpecificationFilter.PrepareSpecsFiltersAsync(alreadyFilteredSpecOptionIds,
                 filterableSpecificationAttributeOptionIds?.ToArray(), _specificationAttributeService, _localizationService, _webHelper, _workContext, _staticCacheManager);
@@ -828,8 +846,9 @@ namespace Nop.Web.Factories
                 if (featuredProducts != null)
                     model.FeaturedProducts = (await _productModelFactory.PrepareProductOverviewModelsAsync(featuredProducts)).ToList();
             }
-
+            
             //products
+            IList<int> alreadyFilteredSpecOptionIds = await model.CatalogProductsModel.FilteringModel.SpecificationFilter.GetAlreadyFilteredSpecOptionIdsAsync(_webHelper);
             var products = await _productService.SearchProductsAsync(command.PageNumber - 1, command.PageSize,
                 manufacturerId: manufacturer.Id,
                 storeId: (await _storeContext.GetCurrentStoreAsync()).Id,
@@ -837,6 +856,7 @@ namespace Nop.Web.Factories
                 excludeFeaturedProducts: !_catalogSettings.IgnoreFeaturedProducts && !_catalogSettings.IncludeFeaturedProductsInNormalLists,
                 priceMin: minPriceConverted,
                 priceMax: maxPriceConverted,
+                filteredSpecs: alreadyFilteredSpecOptionIds,
                 orderBy: (ProductSortingEnum)command.DisplayingModel.OrderBy);
             model.CatalogProductsModel.Products = (await _productModelFactory.PrepareProductOverviewModelsAsync(products)).ToList();
 
